@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 // product struct represents product inventory
-type product struct {
+type Product struct {
 	Model    string
 	Quantity int
 	Price    float64
@@ -11,34 +11,76 @@ type product struct {
 
 // car struct represents the car inventory
 type car struct {
-	product
+	Product
+}
+
+func (p Product) ShowStock() {
+	fmt.Printf("Product: %s", p.Model)
+}
+
+func (p Product) itemStatus() {
+	if p.Quantity > 0 {
+		fmt.Println(" In Stock")
+	} else {
+		fmt.Println(" Not In Stock")
+	}
 }
 
 // represents product inventory list
 type Store struct {
-	product []product
+	Inventory []Product
+	inventoryList int
+	sold int
+	gainTotal float64
+
 }
 
-func (p product) ShowStock() {
-	fmt.Printf("Product: %s", p.Model)
-
+//add method adds a product to the store
+func (s *Store) add(p Product) {
+	s.Inventory = append(s.Inventory, p)
+	s.inventoryList++
 }
 
-//Add creates new store product and appends it to the Store
+// InventoryList list all products
+func (s *Store) InventoryList() {
+	for _, p := range s.Inventory {
+		p.ShowStock()
+	}
+}
 
-//Sold method marks a product as sold
-
+//Sell method marks a product as sold
+func (s *Store) sell(Model string, quantity int) {
+	for i, p := range s.Inventory {
+		if p.Model == Model {
+			if p.Quantity >= quantity {
+				s.Inventory[i].Quantity -= quantity
+				s.sold += quantity
+				s.gainTotal += p.Price * float64(quantity)
+			} else {
+				fmt.Println("Not enough quantity")
+			}
+		}
+	}
+}
 func main() {
-	//Create a store
 
-	//Create a product
+	auto1 := car{"Honda", "50", 50000}
+	auto2 := car{"Honda", "50", 50000}
+
+	//Create a store
+	Store := Store{}
+
+	//Create new product
+	pro1 := Product{[]car{auto1}, "Model" 50, 50000}
 
 	//Add the product to the store
-
+	Store.add(auto1)
 	//Sell the product
+	Store.Sell()
 
 	//List all products in the store
-
+	Store.inventoryList
 	//List all sold products
+	Store.sold
 
 }
