@@ -2,85 +2,79 @@ package main
 
 import "fmt"
 
-// product struct represents product inventory
+//implement the car class with a Display() method that prints out the car's details
+
+type Car struct {
+	make  string
+	model string
+	year  int
+	color string
+}
+
+func (c *Car) Display() {
+	fmt.Println("Make: ", c.make)
+	fmt.Println("Model: ", c.model)
+	fmt.Println("Year: ", c.year)
+	fmt.Println("Color: ", c.color)
+}
+
+//Implement the Product class with a Display() method that prints out the product's details
+
 type Product struct {
-	Model    string
-	Quantity int
-	Price    float64
+	car      *Car
+	quantity int
+	price    int
 }
 
-// car struct represents the car inventory
-type car struct {
-	Product
+func (p *Product) Display() {
+	p.car.Display()
+	fmt.Println("Quantity: ", p.quantity)
+	fmt.Println("Price: ", p.price)
 }
 
-func (p Product) ShowStock() {
-	fmt.Printf("Product: %s", p.Model)
+//IsInStock() method returns a boolean indicating whether the product is in stock or not.
+
+func (p *Product) IsInStock() bool {
+	return p.quantity > 0
 }
 
-func (p Product) itemStatus() {
-	if p.Quantity > 0 {
-		fmt.Println(" In Stock")
-	} else {
-		fmt.Println(" Not In Stock")
-	}
-}
+//Implement the Store class with the following methods: AddProduct(), ListProducts(), SellProduct(), ListSoldProducts()
 
-// represents product inventory list
 type Store struct {
-	Inventory []Product
-	inventoryList int
-	sold int
-	gainTotal float64
-
+	products        []*Product
+	soldProducts    []*Product 
+	totalStockValue int 
+	totalSalesValue int 
 }
 
-//add method adds a product to the store
-func (s *Store) add(p Product) {
-	s.Inventory = append(s.Inventory, p)
-	s.inventoryList++
+func (s *Store) AddProduct(p *Product) {
+	s.products = append(s.products, p) //add product to products
+	s.totalStockValue += p.quantity * p.price //increment total stock value
 }
 
-// InventoryList list all products
-func (s *Store) InventoryList() {
-	for _, p := range s.Inventory {
-		p.ShowStock()
+func (s *Store) ListProducts() {
+	for _, p := range s.products {
+		p.Display()
 	}
 }
 
-//Sell method marks a product as sold
-func (s *Store) sell(Model string, quantity int) {
-	for i, p := range s.Inventory {
-		if p.Model == Model {
-			if p.Quantity >= quantity {
-				s.Inventory[i].Quantity -= quantity
-				s.sold += quantity
-				s.gainTotal += p.Price * float64(quantity)
-			} else {
-				fmt.Println("Not enough quantity")
-			}
-		}
+func (s *Store) SellProduct(p *Product) {
+	//check if product is in stock
+	
+	if !p.IsInStock() {
+		fmt.Println("Sorry, this product is out of stock")
+		return
 	}
+
+	p.quantity-- //decrement quantity
+	s.totalStockValue -= p.price //decrement total stock value
+	s.totalSalesValue += p.price //increment total sales value
+	s.soldProducts = append(s.soldProducts, p) //add product to sold products
 }
-func main() {
 
-	auto1 := car{"Honda", "50", 50000}
-	auto2 := car{"Honda", "50", 50000}
-
-	//Create a store
-	Store := Store{}
-
-	//Create new product
-	pro1 := Product{[]car{auto1}, "Model" 50, 50000}
-
-	//Add the product to the store
-	Store.add(auto1)
-	//Sell the product
-	Store.Sell()
-
-	//List all products in the store
-	Store.inventoryList
-	//List all sold products
-	Store.sold
-
+func (s *Store) ListSoldProducts() {
+	for _, p := range s.soldProducts {
+		p.Display()
+	}
+	fmt.Println("Total Sales: ", s.totalSalesValue) //print total sales value
 }
